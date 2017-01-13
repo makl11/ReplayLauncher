@@ -74,9 +74,6 @@ namespace ReplayLauncher
             }
         }
 
-        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        //Replay thing is not working at all for now!!!!
-
         public void repsel()
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -110,7 +107,7 @@ namespace ReplayLauncher
         {
             if (repname() != "")
             {
-                //Reads the Replayfile          !! NOT WORKING 100% !!
+                //Reads the Replayfiles version      !! NOT WORKING 100% ACCURATE!!
                 BinaryReader br = new BinaryReader(File.OpenRead(repname()));
                 br.BaseStream.Position = 0x14A;
                 char[] charArray = br.ReadChars(13);
@@ -120,32 +117,32 @@ namespace ReplayLauncher
             }
         }        
 
-    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-    public void runReplay()
-        {
-            if (repname() != "")
+        public void runReplay()
             {
-                if (string.Equals(label4.Text.Substring(0, 4), label5.Text.Substring(0, 4)))
+                if (repname() != "")
                 {
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    startInfo.WorkingDirectory = gamepath();
-                    startInfo.FileName = "cmd.exe";
-                    startInfo.Arguments = "/C cd " + "\"" + gamepath() + "\"" + " && " + "\"" + gamepath() + "League of Legends.exe" + "\" " + "\"" + clientexe() + "\" "
-                        + "\"" + repname() + "\" " + "\"-UseRads\" ";
-                    process.StartInfo = startInfo;
-                    process.Start(); 
-                } else
-                {
-                    MessageBox.Show("The version of the replay does not\n match with the version of the game!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (string.Equals(label4.Text.Substring(0, 4), label5.Text.Substring(0, 4)))
+                    {
+                        System.Diagnostics.Process process = new System.Diagnostics.Process();
+                        System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                        startInfo.WorkingDirectory = gamepath();
+                        startInfo.FileName = "cmd.exe";
+                        startInfo.Arguments = "/C cd " + "\"" + gamepath() + "\"" + " && " + "\"" + gamepath() + "League of Legends.exe" + "\" " + "\"" + clientexe() + "\" "
+                            + "\"" + repname() + "\" " + "\"-UseRads\" ";
+                        process.StartInfo = startInfo;
+                        process.Start(); 
+                    }
+                    else
+                    {
+                        MessageBox.Show("The version of the replay does not\nmatch with the version of the game!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-            } else
-            {
-                MessageBox.Show("No valid replay file selected!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                else
+                {
+                    MessageBox.Show("No valid replay file selected!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-        }
         
 
         private void button2_Click(object sender, EventArgs e)
