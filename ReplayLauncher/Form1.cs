@@ -18,6 +18,31 @@ namespace ReplayLauncher
         public Form1()
         {
             InitializeComponent();
+            label4.Text = gamevers().Substring(0, 4);
+        }
+
+        private string gamepath()
+        {
+            //Reads version of the League of Legends.exe
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\"); //opens key
+            string lolPath = (string)regKey.GetValue("Path");                                                             //reads key value
+            string releasesPath = lolPath + @"RADS\solutions\lol_game_client_sln\releases\";                              //defines path to release folder
+            string latestrelease = File.ReadLines(releasesPath + @"releaselisting_EUW").Last();                           //reads latest release number
+            string loldeploy = releasesPath + latestrelease + @"\deploy\";                                                //defines location of latest release exe
+            return loldeploy;
+        }
+
+        private string clientexe()
+        {
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\"); //opens key
+            string lolPath = (string)regKey.GetValue("Path");
+            return lolPath + "LeagueClient.exe";
+        }
+
+        public string gamevers()
+        {
+            string gamevers = FileVersionInfo.GetVersionInfo(gamepath() + "League of Legends.exe").ProductVersion;
+            return (gamevers);
 
         }
 
@@ -28,63 +53,105 @@ namespace ReplayLauncher
 
         private void Form1_DragDrop(object sender, DragEventArgs e)
         {
-            var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            foreach (var file in files)
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                if (System.IO.Path.GetExtension(file).Equals(".rofl", StringComparison.InvariantCultureIgnoreCase))
+                var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+                foreach (var file in files)
                 {
-                    //run the replay
-                }
-                else
-                {
-                    MessageBox.Show("This is no valid replay file", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (System.IO.Path.GetExtension(file).Equals(".rofl", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        replaypath.Text = Path.GetFullPath(file);
+                        replaypath.SelectionStart = replaypath.Text.Length;
+                        replaypath.ScrollToCaret();
+                        repvers();
+                    }
+                    else
+                    {
+                        MessageBox.Show("This is not a valid replay file!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
 
-        OpenFileDialog ofd = new OpenFileDialog();
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        //Replay thing is not working at all for now!!!!
 
-        private void button1_Click_1(object sender, EventArgs e)
+        public void repsel()
         {
+            OpenFileDialog ofd = new OpenFileDialog();
+
             RegistryKey regKey = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\");
             string mydocpath = (string)regKey.GetValue("Personal");
             ofd.InitialDirectory = mydocpath + @"\League of Legends\Replays";
             ofd.Filter = "League of Legends Replay file | *.rofl";
+
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 replaypath.Text = ofd.FileName;
-                checkvers();
-                if (checkvers() == true)
-                {
-                    label1.Text = "Versions match";
-                }
-                if (checkvers() == false)
-                {
-                    label1.Text = "Versions do not match";
-                }
+                replaypath.SelectionStart = replaypath.Text.Length;
+                replaypath.ScrollToCaret();
+                repvers();
             }
         }
 
-        public bool checkvers()
+        private void button1_Click_1(object sender, EventArgs e)
         {
-            //Reads version of the League of Legends.exe
-            string fileName = @"C:\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\0.0.1.157\deploy\League of Legends.exe";
-            string gamevers = FileVersionInfo.GetVersionInfo(fileName).ProductVersion;
-            //Reads the Replayfile          !! NOT WORKING 100% !!
-            BinaryReader br = new BinaryReader(File.OpenRead(ofd.FileName));
-            br.BaseStream.Position = 0x14A;
-            char[] charArray = br.ReadChars(13);
-            string repvers = new string(charArray);
-            br.Close();
-            return (string.Equals(gamevers.Substring(0, 4), repvers.Substring(0, 4)));            
+            repsel();
         }
 
-        private void label1_Click(object sender, EventArgs e)
+        private string repname()
         {
-
+            string rp = replaypath.Text;
+            return rp;
         }
 
- 
+        private void repvers()
+        {
+            if (repname() != "")
+            {
+                //Reads the Replayfile          !! NOT WORKING 100% !!
+                BinaryReader br = new BinaryReader(File.OpenRead(repname()));
+                br.BaseStream.Position = 0x14A;
+                char[] charArray = br.ReadChars(13);
+                string replvers = new string(charArray);
+                br.Close();
+                label5.Text = replvers.Substring(0, 4);
+            }
+        }        
+
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    public void runReplay()
+        {
+            if (repname() != "")
+            {
+                if (string.Equals(label4.Text.Substring(0, 4), label5.Text.Substring(0, 4)))
+                {
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.WorkingDirectory = gamepath();
+                    startInfo.FileName = "cmd.exe";
+                    startInfo.Arguments = "/C cd " + "\"" + gamepath() + "\"" + " && " + "\"" + gamepath() + "League of Legends.exe" + "\" " + "\"" + clientexe() + "\" "
+                        + "\"" + repname() + "\" " + "\"-UseRads\" ";
+                    process.StartInfo = startInfo;
+                    process.Start(); 
+                } else
+                {
+                    MessageBox.Show("The version of the replay does not\n match with the version of the game!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            } else
+            {
+                MessageBox.Show("No valid replay file selected!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            runReplay();
+        }
     }
-}
+ }
+
