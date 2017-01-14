@@ -1,14 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ReplayLauncher
@@ -35,7 +29,7 @@ namespace ReplayLauncher
         private string clientexe()
         {
             RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\"); //opens key
-            string lolPath = (string)regKey.GetValue("Path");
+            string lolPath = (string)regKey.GetValue("Path");                                                             //reads key value
             return lolPath + "LeagueClient.exe";
         }
 
@@ -115,39 +109,93 @@ namespace ReplayLauncher
                 br.Close();
                 label5.Text = replvers.Substring(0, 4);
             }
-        }        
+        }
 
         public void runReplay()
+        {
+            label4.Text = gamevers().Substring(0, 4);
+            if (repname() != "")
             {
-                if (repname() != "")
+                if (string.Equals(label4.Text.Substring(0, 4), label5.Text.Substring(0, 4)))
                 {
-                    if (string.Equals(label4.Text.Substring(0, 4), label5.Text.Substring(0, 4)))
-                    {
-                        System.Diagnostics.Process process = new System.Diagnostics.Process();
-                        System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                        startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                        startInfo.WorkingDirectory = gamepath();
-                        startInfo.FileName = "cmd.exe";
-                        startInfo.Arguments = "/C cd " + "\"" + gamepath() + "\"" + " && " + "\"" + gamepath() + "League of Legends.exe" + "\" " + "\"" + clientexe() + "\" "
-                            + "\"" + repname() + "\" " + "\"-UseRads\" ";
-                        process.StartInfo = startInfo;
-                        process.Start(); 
-                    }
-                    else
-                    {
-                        MessageBox.Show("The version of the replay does not\nmatch with the version of the game!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    startInfo.WorkingDirectory = gamepath();
+                    startInfo.FileName = "cmd.exe";
+                    startInfo.Arguments = "/C cd " + "\"" + gamepath() + "\"" + " && " + "\"" + gamepath() + "League of Legends.exe" + "\" " + "\"" + clientexe() + "\" "
+                        + "\"" + repname() + "\" " + "\"-UseRads\" ";
+                    process.StartInfo = startInfo;
+                    process.Start();
                 }
                 else
                 {
-                    MessageBox.Show("No valid replay file selected!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    DialogResult error1 = MessageBox.Show("The version of the replay does not\nmatch with the version of the game!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    if (error1 == DialogResult.OK)
+                    {
+                        DialogResult copyq = MessageBox.Show("Do you want to use an old League of Legends.exe to play this replay anyway?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                        if (copyq == DialogResult.Yes)
+                        {
+                            copylolexe();
+                        }
+                    }
                 }
             }
-        
+            else
+            {
+                MessageBox.Show("No valid replay file selected!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void copylolexe()
+        {
+            string vers = label5.Text.Substring(0, 4);
+
+            if (File.Exists(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe"))
+            { 
+                if (File.Exists(gamepath() + @"\bkp.League of Legends.exe"))
+                {
+                    File.Delete(gamepath() + @"\bkp.League of Legends.exe");
+                }
+                File.Move(gamepath() + @"\League of Legends.exe", gamepath() + @"\bkp.League of Legends.exe");
+                {
+
+                    File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamepath() + @"League of Legends.exe");
+                    runReplay();
+                }
+            }
+            else
+            {
+                MessageBox.Show("This version is not supported!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
             runReplay();
+        }
+
+        private void Form1_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Form2 frm2 = new Form2();
+            frm2.ShowDialog();
+            e.Cancel = true;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            string gmvers = gamevers().Substring(0, 4);
+            string replvers = label5.Text.Substring(0, 4);
+            if (File.Exists(gamepath() + @"\League of Legends.exe")
+                && File.Exists(gamepath() + @"\bkp.League of Legends.exe"))
+            {
+                if (gmvers.CompareTo(replvers) < 0)
+                {
+                    File.Delete(gamepath() + @"\League of Legends.exe");
+                    File.Move(gamepath() + @"\bkp.League of Legends.exe", gamepath() + @"\League of Legends.exe");
+                    File.Delete(gamepath() + @"\bkp.League of Legends.exe");
+                }
+            }
         }
     }
  }
