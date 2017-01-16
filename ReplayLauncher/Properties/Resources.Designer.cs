@@ -71,36 +71,6 @@ namespace ReplayLauncher.Properties {
         }
         
         /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
-        /// </summary>
-        internal static byte[] LeagueofLegendsPatch6_23 {
-            get {
-                object obj = ResourceManager.GetObject("LeagueofLegendsPatch6_23", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
-        /// </summary>
-        internal static byte[] LeagueofLegendsPatch6_24 {
-            get {
-                object obj = ResourceManager.GetObject("LeagueofLegendsPatch6_24", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Sucht eine lokalisierte Ressource vom Typ System.Byte[].
-        /// </summary>
-        internal static byte[] LeagueofLegendsPatch7_1_ {
-            get {
-                object obj = ResourceManager.GetObject("LeagueofLegendsPatch7_1_", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap play {
