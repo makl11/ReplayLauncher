@@ -27,12 +27,11 @@
             this.groupBox2.Controls.Add(this.browseButton);
             this.groupBox2.Controls.Add(this.replayPath);
             this.groupBox2.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular,
-                                                           System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox2.Location = new System.Drawing.Point(12, 126);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(260, 60);
-            this.groupBox2.TabIndex = 0;
+            this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Choose Replay:";
             // 
@@ -52,7 +51,8 @@
             this.replayPath.Name = "replayPath";
             this.replayPath.ReadOnly = true;
             this.replayPath.Size = new System.Drawing.Size(166, 20);
-            this.replayPath.TabIndex = 1;
+            this.replayPath.TabIndex = 0;
+            this.replayPath.TabStop = false;
             // 
             // tableLayoutPanel1
             // 
@@ -69,13 +69,12 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(191, 37);
-            this.tableLayoutPanel1.TabIndex = 4;
+            this.tableLayoutPanel1.TabIndex = 0;
             // 
             // GameVersLabel
             // 
             this.GameVersLabel.AutoSize = true;
-            this.GameVersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold,
-                                                               System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GameVersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GameVersLabel.Location = new System.Drawing.Point(3, 0);
             this.GameVersLabel.Name = "GameVersLabel";
             this.GameVersLabel.Size = new System.Drawing.Size(84, 13);
@@ -85,35 +84,32 @@
             // ReplayVersLabel
             // 
             this.ReplayVersLabel.AutoSize = true;
-            this.ReplayVersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, 
-                                                                 System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ReplayVersLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ReplayVersLabel.Location = new System.Drawing.Point(3, 18);
             this.ReplayVersLabel.Name = "ReplayVersLabel";
             this.ReplayVersLabel.Size = new System.Drawing.Size(91, 13);
-            this.ReplayVersLabel.TabIndex = 1;
+            this.ReplayVersLabel.TabIndex = 0;
             this.ReplayVersLabel.Text = "Replayversion:";
             // 
             // ReplayVersLabel2
             // 
             this.ReplayVersLabel2.AutoSize = true;
-            this.ReplayVersLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, 
-                                                                  System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ReplayVersLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ReplayVersLabel2.Location = new System.Drawing.Point(134, 18);
             this.ReplayVersLabel2.Name = "ReplayVersLabel2";
             this.ReplayVersLabel2.Size = new System.Drawing.Size(22, 13);
-            this.ReplayVersLabel2.TabIndex = 3;
+            this.ReplayVersLabel2.TabIndex = 0;
             this.ReplayVersLabel2.Text = "  -  ";
             this.ReplayVersLabel2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // GameVersLabel2
             // 
             this.GameVersLabel2.AutoSize = true;
-            this.GameVersLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, 
-                                                                System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GameVersLabel2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GameVersLabel2.Location = new System.Drawing.Point(134, 0);
             this.GameVersLabel2.Name = "GameVersLabel2";
             this.GameVersLabel2.Size = new System.Drawing.Size(22, 13);
-            this.GameVersLabel2.TabIndex = 2;
+            this.GameVersLabel2.TabIndex = 0;
             this.GameVersLabel2.Text = "  -  ";
             this.GameVersLabel2.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
@@ -124,7 +120,7 @@
             this.groupBox1.Location = new System.Drawing.Point(12, -1);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(260, 71);
-            this.groupBox1.TabIndex = 5;
+            this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             // 
             // playButton
@@ -134,7 +130,7 @@
             this.playButton.Location = new System.Drawing.Point(7, 13);
             this.playButton.Name = "playButton";
             this.playButton.Size = new System.Drawing.Size(50, 50);
-            this.playButton.TabIndex = 3;
+            this.playButton.TabIndex = 1;
             this.playButton.UseVisualStyleBackColor = true;
             this.playButton.Click += new System.EventHandler(this.playButton_Click);
             // 
@@ -142,16 +138,15 @@
             // 
             this.instructions.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.instructions.Enabled = false;
-            this.instructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, 
-                                                              System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.instructions.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.instructions.Location = new System.Drawing.Point(12, 76);
             this.instructions.Multiline = true;
             this.instructions.Name = "instructions";
             this.instructions.ReadOnly = true;
             this.instructions.Size = new System.Drawing.Size(260, 46);
-            this.instructions.TabIndex = 6;
+            this.instructions.TabIndex = 0;
             this.instructions.Text = "Drag and Drop a League of Legends replay file (.rofl) file into the window or use" +
-                                     " the browser below. Click the play button to start the replay.";
+    " the browser below. Click the play button to start the replay.";
             // 
             // MainForm
             // 
