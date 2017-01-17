@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -75,7 +76,7 @@ namespace ReplayLauncher
                 //NOT WORKING 100% ACCURATE --> problem with games that ended as "remake", because "gamelenght" is short on characters!!       TO-DO!
                 int c = 0;
                 int runs = 0;
-                byte[] data = new byte[400];
+                byte[] data = new byte[20];
 
                 BinaryReader br = new BinaryReader(new FileStream(repName(), FileMode.Open, FileAccess.Read, FileShare.None));
                 br.BaseStream.Position = 0x14A;
@@ -103,6 +104,45 @@ namespace ReplayLauncher
             else { return ""; }
         }
 
+        private bool isRemake()
+        {
+            if (repName() != "")
+            { 
+                int c = 0;
+                int runs = 0;
+                byte[] data = new byte[15];
+
+                BinaryReader br = new BinaryReader(new FileStream(repName(), FileMode.Open, FileAccess.Read, FileShare.None));
+                br.BaseStream.Position = 0x12E;
+                while (c == 0)
+                {
+                    data[runs] = br.ReadByte();
+                    if (data[runs] == 0x2C)
+                    {
+                        c = 1;
+                    }
+                    runs++;
+                }
+                br.Close();
+
+                char[] i = Encoding.ASCII.GetString(data).ToCharArray();
+                string readgamelenght = string.Join("", i).Replace(",", "");
+                decimal gamelenght = Decimal.Parse(readgamelenght.Replace(".", ","), NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint);
+                if (Convert.ToDouble(gamelenght) < 300000)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         private void MainForm_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.All;
@@ -122,6 +162,7 @@ namespace ReplayLauncher
                         replayPath.SelectionStart = replayPath.Text.Length;
                         replayPath.ScrollToCaret();
                         replayVersion();
+                        ReplayVersLabel2.Text = replayVersion();
                     }
                     else
                     {
@@ -135,7 +176,7 @@ namespace ReplayLauncher
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
-            RegistryKey regKey = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\User Shell Folders\\");
+            RegistryKey regKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders\");
             string mydocpath = (string)regKey.GetValue("Personal");
             ofd.InitialDirectory = mydocpath + @"\League of Legends\Replays";
             ofd.Filter = "League of Legends Replay file | *.rofl";
@@ -153,13 +194,13 @@ namespace ReplayLauncher
         private void playButton_Click(object sender, EventArgs e)
         {
             GameVersLabel2.Text = gameVersion();
-            if (repName() != "")
+            if (repName() != "" && !isRemake())
             {
                 if (string.Equals(GameVersLabel2.Text, ReplayVersLabel2.Text))
                 {
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    Process process = new Process();
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.WorkingDirectory = gamePath();
                     startInfo.FileName = "cmd.exe";
                     startInfo.Arguments = "/C cd " + "\"" + gamePath() + "\"" + " && " + "\"" + gamePath() + "League of Legends.exe" + "\" " + "\"" + clientexe() + "\" "
@@ -199,7 +240,15 @@ namespace ReplayLauncher
             }
             else
             {
-                MessageBox.Show("No valid replay file selected!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if(string.IsNullOrEmpty(repName()))
+                {
+                   MessageBox.Show("No valid replay file selected!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                if (isRemake())
+                {
+                    MessageBox.Show("This game was a remake. Remakes are not supported yet!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                }
             }
         }
 
