@@ -17,6 +17,8 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.playButton = new System.Windows.Forms.Button();
             this.instructions = new System.Windows.Forms.TextBox();
+            this.cPlayingT = new System.Windows.Forms.Label();
+            this.cPlayingC = new System.Windows.Forms.Panel();
             this.groupBox2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -80,6 +82,7 @@
             this.GameVersLabel.Size = new System.Drawing.Size(84, 13);
             this.GameVersLabel.TabIndex = 0;
             this.GameVersLabel.Text = "Gameversion:";
+            this.GameVersLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ReplayVersLabel
             // 
@@ -90,6 +93,7 @@
             this.ReplayVersLabel.Size = new System.Drawing.Size(91, 13);
             this.ReplayVersLabel.TabIndex = 0;
             this.ReplayVersLabel.Text = "Replayversion:";
+            this.ReplayVersLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // ReplayVersLabel2
             // 
@@ -100,7 +104,7 @@
             this.ReplayVersLabel2.Size = new System.Drawing.Size(22, 13);
             this.ReplayVersLabel2.TabIndex = 0;
             this.ReplayVersLabel2.Text = "  -  ";
-            this.ReplayVersLabel2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.ReplayVersLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // GameVersLabel2
             // 
@@ -111,7 +115,7 @@
             this.GameVersLabel2.Size = new System.Drawing.Size(22, 13);
             this.GameVersLabel2.TabIndex = 0;
             this.GameVersLabel2.Text = "  -  ";
-            this.GameVersLabel2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.GameVersLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // groupBox1
             // 
@@ -148,15 +152,39 @@
             this.instructions.Text = "Drag and Drop a League of Legends replay file (.rofl) file into the window or use" +
     " the browser below. Click the play button to start the replay.";
             // 
+            // cPlayingT
+            // 
+            this.cPlayingT.AutoSize = true;
+            this.cPlayingT.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.cPlayingT.Location = new System.Drawing.Point(75, 194);
+            this.cPlayingT.Name = "cPlayingT";
+            this.cPlayingT.Size = new System.Drawing.Size(133, 13);
+            this.cPlayingT.TabIndex = 3;
+            this.cPlayingT.Text = "Currently playing a replay...";
+            this.cPlayingT.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cPlayingT.Visible = false;
+            // 
+            // cPlayingC
+            // 
+            this.cPlayingC.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
+            this.cPlayingC.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.cPlayingC.Location = new System.Drawing.Point(-1, 191);
+            this.cPlayingC.Name = "cPlayingC";
+            this.cPlayingC.Size = new System.Drawing.Size(286, 21);
+            this.cPlayingC.TabIndex = 4;
+            this.cPlayingC.Visible = false;
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 191);
+            this.Controls.Add(this.cPlayingT);
             this.Controls.Add(this.instructions);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.cPlayingC);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.HelpButton = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -189,5 +217,8 @@
         private System.Windows.Forms.Label ReplayVersLabel2;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.TextBox instructions;
+        private System.ComponentModel.IContainer components;
+        private System.Windows.Forms.Label cPlayingT;
+        private System.Windows.Forms.Panel cPlayingC;
     }
 }

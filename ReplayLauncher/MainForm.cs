@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -19,34 +20,42 @@ namespace ReplayLauncher
 
         private string clientexe()
         {
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\"); //opens key
-            string lolPath = (string)regKey.GetValue("Path");                                                             //reads key value
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\");
+            string lolPath = (string)regKey.GetValue("Path");
             return lolPath + "LeagueClient.exe";
         }
 
         private string gamePath()
         {
             //Reads version of the League of Legends.exe
-            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\"); //opens key
-            string lolPath = (string)regKey.GetValue("Path");                                                             //reads key value
+            RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\");
+            string lolPath = (string)regKey.GetValue("Path");
             string releasesPath = lolPath + @"RADS\solutions\lol_game_client_sln\releases\";                              //defines path to release folder
             string latestRelease = File.ReadLines(releasesPath + @"releaselisting_EUW").Last();                           //reads latest release number
-            string lolDeploy = releasesPath + latestRelease + @"\deploy\";                                                //defines location of the folder of the latest release exe
+            string lolDeploy = releasesPath + latestRelease + @"\deploy\";                                                //defines location of the folder of the latest files
             return lolDeploy;
         }
 
         private string gameVersion()
         {
-            string gameVers = FileVersionInfo.GetVersionInfo(gamePath() + "League of Legends.exe").ProductVersion;
-            if (gameVers.Substring(0, 4).EndsWith("."))
+            try
             {
-                return (gameVers.Substring(0, 3));
-            }
-            else
+                string gameVers = FileVersionInfo.GetVersionInfo(gamePath() + "League of Legends.exe").ProductVersion;
+                if (gameVers.Substring(0, 4).EndsWith("."))
+                {
+                    return (gameVers.Substring(0, 3));
+                }
+                else
+                {
+                    return (gameVers.Substring(0, 4));
+                }
+            } 
+            catch
             {
-                return (gameVers.Substring(0, 4));
+                MessageBox.Show("The required game files for League of Legends could not be found! The program will exit now.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Environment.Exit(1);
+                return null;
             }
-
         }
 
         private string bkpVersion()
@@ -200,6 +209,7 @@ namespace ReplayLauncher
                 {
                     Process process = new Process();
                     ProcessStartInfo startInfo = new ProcessStartInfo();
+                    process.EnableRaisingEvents = true;
                     startInfo.WindowStyle = ProcessWindowStyle.Hidden;
                     startInfo.WorkingDirectory = gamePath();
                     startInfo.FileName = "cmd.exe";
@@ -207,6 +217,8 @@ namespace ReplayLauncher
                         + "\"" + repName() + "\" " + "\"-UseRads\" ";
                     process.StartInfo = startInfo;
                     process.Start();
+                    nowPlaying(true);
+                    process.Exited += new EventHandler(process_Exited);
                 }
                 else
                 {
@@ -224,10 +236,44 @@ namespace ReplayLauncher
                             {
                                 if (File.Exists(gamePath() + @"\bkp.League of Legends.exe"))
                                 {
-                                    File.Delete(gamePath() + @"\bkp.League of Legends.exe");
+                                    if (bkpVersion().CompareTo(gameVersion()) < 0)
+                                    {
+                                        File.Delete(gamePath() + @"\bkp.League of Legends.exe");
+                                        File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            File.Delete(gamePath() + @"\League of Legends.exe");
+                                            File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
+                                        }
+                                        catch
+                                        {
+                                            this.Cursor = Cursors.WaitCursor;
+                                            System.Threading.Thread.Sleep(5000);
+                                            File.Delete(gamePath() + @"\League of Legends.exe");
+                                            File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
+                                            this.Cursor = Cursors.Default;
+                                        }
+                                    }
                                 }
-                                File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
-                                File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
+                                else
+                                {
+                                    try
+                                    {
+                                        File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
+                                        File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
+                                    }
+                                    catch
+                                    {
+                                        this.Cursor = Cursors.WaitCursor;
+                                        System.Threading.Thread.Sleep(5000);
+                                        File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
+                                        File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
+                                        this.Cursor = Cursors.Default;
+                                    }
+                                }
                                 playButton_Click(sender, e);
                             }
                             else
@@ -259,12 +305,43 @@ namespace ReplayLauncher
             e.Cancel = true;
         }
 
+        private void process_Exited(object sender, EventArgs e)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((Action)(() => nowPlaying(false)));
+                return;
+            }
+            nowPlaying(false);
+        }
+
+        private void nowPlaying(bool a)
+        {
+            if (a == true)
+            {
+                playButton.Enabled = false;
+                browseButton.Enabled = false;
+                this.ClientSize = new System.Drawing.Size(284, 211);
+                cPlayingT.Visible = true;
+                cPlayingC.Visible = true;
+            }
+            if (a == false)
+            {
+                playButton.Enabled = true;
+                browseButton.Enabled = true;
+                this.ClientSize = new System.Drawing.Size(284, 191);
+                cPlayingT.Visible = false;
+                cPlayingC.Visible = false;
+
+            }
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (File.Exists(gamePath() + @"\League of Legends.exe")
                 && File.Exists(gamePath() + @"\bkp.League of Legends.exe"))
             {
-                if (bkpVersion().CompareTo(gameVersion()) >= 0)
+                if (bkpVersion().CompareTo(gameVersion()) > 0)
                 {
                     try
                     {
@@ -276,14 +353,15 @@ namespace ReplayLauncher
                         try
                         {
                             this.Cursor = Cursors.WaitCursor;
+                            this.Enabled = false;
                             System.Threading.Thread.Sleep(5000);
                             File.Delete(gamePath() + @"\League of Legends.exe");
                             File.Move(gamePath() + @"\bkp.League of Legends.exe", gamePath() + @"\League of Legends.exe");
                         }
                         catch
-	                    {
-                            MessageBox.Show("There was a problem in the clean-up process!\nPlease do it manually by deleting \"League of Legends.exe\""
-                                            + " and renaming \"bkp.League of Legends.exe\" to \"League of Legends.exe\"", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        {
+                            MessageBox.Show("There was a problem in the clean-up process!\nPlease do it manually by deleting \"League of Legends.exe\" " +
+                                            "and renaming \"bkp.League of Legends.exe\" to \"League of Legends.exe\"", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             Process process = new Process();
                             process.StartInfo.FileName = "explorer.exe";
                             process.StartInfo.Arguments = "\"" + gamePath() + "\"";
@@ -298,4 +376,4 @@ namespace ReplayLauncher
             }
         }
     }
- }
+}

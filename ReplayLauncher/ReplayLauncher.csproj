@@ -118,9 +118,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\icon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\play.png" />
   </ItemGroup>
   <ItemGroup>
