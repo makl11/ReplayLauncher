@@ -82,8 +82,8 @@ namespace ReplayLauncher
         {
             if (repName() != "")
             {
-                //NOT WORKING 100% ACCURATE --> problem with games that ended as "remake", because "gamelenght" is short on characters!!       TO-DO!
-                int c = 0;
+                //does not work in a few cases.             TO-DO: Look for better solution of reading gameLenght and Version of the replay
+                 int c = 0;
                 int runs = 0;
                 byte[] data = new byte[20];
 
