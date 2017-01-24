@@ -27,7 +27,6 @@ namespace ReplayLauncher
 
         private string gamePath()
         {
-            //Reads version of the League of Legends.exe
             RegistryKey regKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Riot Games\League of Legends\");
             string lolPath = (string)regKey.GetValue("Path");
             string releasesPath = lolPath + @"RADS\solutions\lol_game_client_sln\releases\";                              //defines path to release folder
@@ -205,7 +204,7 @@ namespace ReplayLauncher
             GameVersLabel2.Text = gameVersion();
             if (repName() != "" && !isRemake())
             {
-                if (string.Equals(GameVersLabel2.Text, ReplayVersLabel2.Text))
+                if (string.Equals(gameVersion(), replayVersion()))
                 {
                     Process process = new Process();
                     ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -225,60 +224,81 @@ namespace ReplayLauncher
                     DialogResult error1 = MessageBox.Show("The version of the replay does not\nmatch with the version of the game!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     if (error1 == DialogResult.OK)
                     {
-                        DialogResult copyq = MessageBox.Show("Do you want to use an old League of Legends.exe\nto play this replay anyway?" + 
+                        DialogResult copyq = MessageBox.Show("Do you want to try to use a compatible League of Legends.exe\nto play this replay anyway?" + 
                             "\nYou might have to patch your game afterwards!", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                         if (copyq == DialogResult.Yes)
                         {
-                            replayVersion();
-                            string vers = replayVersion();
-
-                            if (File.Exists(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe"))  // ADD compare versions!!
+                            if (File.Exists(gamePath() + @"\bkp.League of Legends.exe") && bkpVersion() == replayVersion())
                             {
-                                if (File.Exists(gamePath() + @"\bkp.League of Legends.exe"))
+                                try
                                 {
-                                    if (bkpVersion().CompareTo(gameVersion()) < 0)
+                                    File.Delete(gamePath() + @"\League of Legends.exe");
+                                    File.Move(gamePath() + @"\bkp.League of Legends.exe", gamePath() + @"\League of Legends.exe");
+                                    playButton_Click(sender, e);
+                                }
+                                catch
+                                {
+                                    this.Cursor = Cursors.WaitCursor;
+                                    System.Threading.Thread.Sleep(5000);
+                                    File.Delete(gamePath() + @"\League of Legends.exe");
+                                    File.Move(gamePath() + @"\bkp.League of Legends.exe", gamePath() + @"\League of Legends.exe");
+                                    this.Cursor = Cursors.Default;
+                                    playButton_Click(sender, e);
+                                }
+                            }
+                            else
+                            {
+                                replayVersion();
+                                string vers = replayVersion();
+
+                                if (File.Exists(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe"))  // ADD compare versions!!
+                                {
+                                    if (File.Exists(gamePath() + @"\bkp.League of Legends.exe"))
                                     {
-                                        File.Delete(gamePath() + @"\bkp.League of Legends.exe");
-                                        File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
+                                        if (bkpVersion().CompareTo(gameVersion()) < 0)
+                                        {
+                                            File.Delete(gamePath() + @"\bkp.League of Legends.exe");
+                                            File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
+                                        }
+                                        else
+                                        {
+                                            try
+                                            {
+                                                File.Delete(gamePath() + @"\League of Legends.exe");
+                                                File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
+                                            }
+                                            catch
+                                            {
+                                                this.Cursor = Cursors.WaitCursor;
+                                                System.Threading.Thread.Sleep(5000);
+                                                File.Delete(gamePath() + @"\League of Legends.exe");
+                                                File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
+                                                this.Cursor = Cursors.Default;
+                                            }
+                                        }
                                     }
                                     else
                                     {
                                         try
                                         {
-                                            File.Delete(gamePath() + @"\League of Legends.exe");
+                                            File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
                                             File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
                                         }
                                         catch
                                         {
                                             this.Cursor = Cursors.WaitCursor;
                                             System.Threading.Thread.Sleep(5000);
-                                            File.Delete(gamePath() + @"\League of Legends.exe");
+                                            File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
                                             File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
                                             this.Cursor = Cursors.Default;
                                         }
                                     }
+                                    playButton_Click(sender, e);
                                 }
                                 else
                                 {
-                                    try
-                                    {
-                                        File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
-                                        File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
-                                    }
-                                    catch
-                                    {
-                                        this.Cursor = Cursors.WaitCursor;
-                                        System.Threading.Thread.Sleep(5000);
-                                        File.Move(gamePath() + @"\League of Legends.exe", gamePath() + @"\bkp.League of Legends.exe");
-                                        File.Copy(@"Resources\LeagueofLegendsexe\LeagueofLegendsPatch" + vers + ".exe", gamePath() + @"League of Legends.exe");
-                                        this.Cursor = Cursors.Default;
-                                    }
+                                    MessageBox.Show("This version is not supported!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
-                                playButton_Click(sender, e);
-                            }
-                            else
-                            {
-                                MessageBox.Show("This version is not supported!", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
                     }
