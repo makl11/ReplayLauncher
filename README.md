@@ -11,7 +11,7 @@ A simple program to play replayfiles (_.rofl_) of League of Legends games.
   
 
 ### To-Do
-- [ ] Add a better way to read the replay files version.
+- [ ] Add a more consistent way to read the replay files version.
 - [ ] Add support for games that ended as _remake_.
 - [ ] Add that the program can automatically download the needed _League of Legends.exe_ from a server.
 
