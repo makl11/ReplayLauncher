@@ -1,5 +1,5 @@
 # League of Legends Replay Launcher
-A simple program to play replays (_.rofl_) of League of Legends games.
+A simple program to play replayfiles (_.rofl_) of League of Legends games.
 ### Features
 * _.rofl_ files can be dragged and dropped into the window.
 * a backup of the existing League of Legends file is __always__ created.
