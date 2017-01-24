@@ -341,18 +341,19 @@ namespace ReplayLauncher
             {
                 playButton.Enabled = false;
                 browseButton.Enabled = false;
-                this.ClientSize = new System.Drawing.Size(284, 211);
+                ClientSize = new System.Drawing.Size(284, 211);
                 cPlayingT.Visible = true;
                 cPlayingC.Visible = true;
+                this.AllowDrop = false;
             }
             if (a == false)
             {
                 playButton.Enabled = true;
                 browseButton.Enabled = true;
-                this.ClientSize = new System.Drawing.Size(284, 191);
+                ClientSize = new System.Drawing.Size(284, 191);
                 cPlayingT.Visible = false;
                 cPlayingC.Visible = false;
-
+                this.AllowDrop = true;
             }
         }
 
